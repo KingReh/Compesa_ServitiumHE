@@ -49,7 +49,7 @@ async function generate() {
       { path: 'icons/icon-512x512-maskable.png', size: 512 }
     ];
 
-    console.log('[PWA Icon Generator] Starting image processing...');
+    console.log('[PWA Icon Generator] Starting premium image processing...');
 
     for (const def of iconDefinitions) {
       const fullPath = path.join(publicDir, def.path);
@@ -60,8 +60,36 @@ async function generate() {
       // Create a square container with the theme background color
       const container = new Jimp({ width: def.size, height: def.size, color: 0x111217ff });
 
-      // Target logo width should be roughly 75% of container size to have beautiful padding
-      const targetLogoWidth = Math.max(16, Math.round(def.size * 0.75));
+      // Generate a stunning, smooth, high-fidelity radial gradient on the icon background
+      // Gradients go from a sleek deep charcoal-indigo (#1e2029) to solid rich dark (#090a0f)
+      const centerX = def.size / 2;
+      const centerY = def.size / 2;
+      const maxDist = Math.sqrt(centerX * centerX + centerY * centerY);
+
+      for (let y = 0; y < def.size; y++) {
+        for (let x = 0; x < def.size; x++) {
+          const dx = x - centerX;
+          const dy = y - centerY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const ratio = Math.min(1, dist / maxDist);
+          
+          // Interpolate R: 30->9, G: 32->10, B: 41->15
+          const r = Math.round(30 * (1 - ratio) + 9 * ratio);
+          const g = Math.round(32 * (1 - ratio) + 10 * ratio);
+          const b = Math.round(41 * (1 - ratio) + 15 * ratio);
+          
+          const colorNum = (r << 24) | (g << 16) | (b << 8) | 0xff;
+          container.setPixelColor(colorNum, x, y);
+        }
+      }
+
+      // Sizing Strategy:
+      // - Maskable icon requires all content inside a 60% safe area circle (use 55% for safety)
+      // - Standard icons can use 70% for high legibility
+      const isMaskable = def.path.includes('maskable');
+      const scaleFactor = isMaskable ? 0.55 : 0.70;
+
+      const targetLogoWidth = Math.max(16, Math.round(def.size * scaleFactor));
       const targetLogoHeight = Math.round((logo.height / logo.width) * targetLogoWidth);
 
       // Resize the logo
@@ -76,7 +104,7 @@ async function generate() {
 
       // Write to destination
       await container.write(fullPath);
-      console.log(`[PWA Icon Generator] Generated ${def.path} physically resized to ${def.size}x${def.size}`);
+      console.log(`[PWA Icon Generator] Generated ${def.path} physically resized to ${def.size}x ${def.size} (${isMaskable ? 'Maskable' : 'Standard'})`);
     }
 
     // Generate SVGs
