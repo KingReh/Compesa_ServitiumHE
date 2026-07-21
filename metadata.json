@@ -1,0 +1,6 @@
+{
+  "name": "Servitium - Horas Extras",
+  "description": "Sistema premium de lançamento, cálculo e consolidação de horas extras para a folha de pagamento dos colaboradores da Servitium.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

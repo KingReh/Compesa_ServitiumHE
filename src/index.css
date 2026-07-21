@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom dark scrollbar for high density layout */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090a0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262836;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f4257;
+}
+
+/* Active indicator pulse */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.8)); }
+}
+
+.active-pulse-glow {
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+/* Safe Area Insets for iPhones, iPads & notch devices */
+.safe-padding-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-padding-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-bottom {
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Prevent double-tap-zoom and delay on PWA mobile devices */
+button, select, input, a {
+  touch-action: manipulation;
+}
+
+/* Fluid responsive styles */
+@media (max-width: 640px) {
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+
