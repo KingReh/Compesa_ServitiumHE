@@ -51,6 +51,11 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
+  // Skip requests that are not http or https (e.g., chrome-extension, extension, data, about)
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    return;
+  }
+
   // Skip dev server WebSockets or HMR connections
   if (url.pathname.includes('ws') || url.pathname.includes('hmr') || (url.hostname === 'localhost' && url.port === '5173')) {
     return;
@@ -95,7 +100,11 @@ async function networkFirst(request, fallbackUrl) {
     const networkResponse = await fetch(request);
     if (networkResponse && networkResponse.status === 200) {
       const cache = await caches.open(CACHE_NAME);
-      cache.put(request, networkResponse.clone());
+      try {
+        await cache.put(request, networkResponse.clone());
+      } catch (cacheErr) {
+        console.warn('[Service Worker] Failed to write to cache:', cacheErr);
+      }
     }
     return networkResponse;
   } catch (error) {
@@ -124,7 +133,11 @@ async function cacheFirst(request) {
     const networkResponse = await fetch(request);
     if (networkResponse && networkResponse.status === 200) {
       const cache = await caches.open(CACHE_NAME);
-      cache.put(request, networkResponse.clone());
+      try {
+        await cache.put(request, networkResponse.clone());
+      } catch (cacheErr) {
+        console.warn('[Service Worker] Failed to write to cache:', cacheErr);
+      }
     }
     return networkResponse;
   } catch (error) {
@@ -140,7 +153,11 @@ async function staleWhileRevalidate(request) {
   
   const fetchPromise = fetch(request).then((networkResponse) => {
     if (networkResponse && networkResponse.status === 200) {
-      cache.put(request, networkResponse.clone());
+      try {
+        cache.put(request, networkResponse.clone());
+      } catch (cacheErr) {
+        console.warn('[Service Worker] Failed to write to cache:', cacheErr);
+      }
     }
     return networkResponse;
   }).catch((err) => {
