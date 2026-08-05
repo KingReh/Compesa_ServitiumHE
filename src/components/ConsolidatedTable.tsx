@@ -899,8 +899,8 @@ export default function ConsolidatedTable({
               halign: "center", 
               valign: "middle", 
               fontStyle: "bold",
-              fillColor: undefined,
-              textColor: [11, 60, 131]
+              fillColor: [11, 60, 131],
+              textColor: [255, 255, 255]
             } 
           });
         }
@@ -990,7 +990,11 @@ export default function ConsolidatedTable({
       margin: { left: 8, right: 8, top: startY, bottom: bottomMargin },
       didParseCell: (data) => {
         if (data.section === "body") {
-          if (data.column.index === 5) {
+          if (data.column.index === 0) {
+            data.cell.styles.fillColor = [11, 60, 131];
+            data.cell.styles.textColor = [255, 255, 255];
+            data.cell.styles.fontStyle = "bold";
+          } else if (data.column.index === 5) {
             data.cell.styles.fillColor = [240, 249, 255];
           } else if (data.column.index === 6) {
             data.cell.styles.fillColor = [255, 241, 242];
