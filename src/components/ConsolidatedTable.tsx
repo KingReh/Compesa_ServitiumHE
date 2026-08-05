@@ -905,10 +905,10 @@ export default function ConsolidatedTable({
           });
         }
         
-        rowCells.push({ content: rec.nome, styles: { fontStyle: "bold", textColor: [0, 0, 0] } });
+        rowCells.push({ content: rec.nome, styles: { fontStyle: "bold", textColor: [0, 0, 0], halign: "center" } });
         rowCells.push({ content: rec.matricula, styles: { halign: "center" } });
         rowCells.push({ content: rec.cpf, styles: { halign: "center" } });
-        rowCells.push({ content: rec.habilitacao || "Nenhuma" });
+        rowCells.push({ content: rec.habilitacao || "Nenhuma", styles: { halign: "center" } });
 
         const formatHours = (timeStr: string) => {
           if (!timeStr || timeStr === "00:00") return "";
@@ -959,10 +959,10 @@ export default function ConsolidatedTable({
       },
       columnStyles: {
         0: { cellWidth: 24, halign: "center", valign: "middle", fontSize: bodyFontSize },
-        1: { cellWidth: 41, valign: "middle", fontSize: bodyFontSize },
+        1: { cellWidth: 41, halign: "center", valign: "middle", fontSize: bodyFontSize },
         2: { cellWidth: 13, halign: "center", valign: "middle", fontSize: Math.max(3.0, bodyFontSize - 0.5) },
         3: { cellWidth: 23, halign: "center", valign: "middle", fontSize: Math.max(3.0, bodyFontSize - 0.5) },
-        4: { cellWidth: 30, valign: "middle", fontSize: bodyFontSize },
+        4: { cellWidth: 30, halign: "center", valign: "middle", fontSize: bodyFontSize },
         5: { cellWidth: 13, halign: "center", valign: "middle", fontSize: bodyFontSize },
         6: { cellWidth: 13, halign: "center", valign: "middle", fontSize: bodyFontSize },
         7: { cellWidth: 13, halign: "center", valign: "middle", fontSize: bodyFontSize },
