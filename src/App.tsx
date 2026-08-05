@@ -229,7 +229,6 @@ export default function App() {
       habilitacao: selectedEmployee.habilitacao || "Nenhuma",
       he50: computedTotals.he50,
       he100: computedTotals.he100,
-      heNoturna100: "00:00", // Start default, editable later
       adNoturno50: computedTotals.adNoturno50,
       adNoturno100: computedTotals.adNoturno100,
       periodo: periodName,

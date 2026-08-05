@@ -50,14 +50,12 @@ export default function ConsolidatedTable({
       
       const newHe50 = roundTo30MinCriterion(rec.he50);
       const newHe100 = roundTo30MinCriterion(rec.he100);
-      const newHeNot100 = roundTo30MinCriterion(rec.heNoturna100);
       const newAdNot50 = roundTo30MinCriterion(rec.adNoturno50);
       const newAdNot100 = roundTo30MinCriterion(rec.adNoturno100);
       
       if (
         newHe50 !== rec.he50 ||
         newHe100 !== rec.he100 ||
-        newHeNot100 !== rec.heNoturna100 ||
         newAdNot50 !== rec.adNoturno50 ||
         newAdNot100 !== rec.adNoturno100
       ) {
@@ -72,7 +70,6 @@ export default function ConsolidatedTable({
         ...rec,
         he50: newHe50,
         he100: newHe100,
-        heNoturna100: newHeNot100,
         adNoturno50: newAdNot50,
         adNoturno100: newAdNot100
       };
@@ -91,23 +88,23 @@ export default function ConsolidatedTable({
   const stats = useMemo(() => {
     let totalHE50Mins = 0;
     let totalHE100Mins = 0;
-    let totalHENot100Mins = 0;
-    let totalHENot50Mins = 0;
+    let totalAdNot50Mins = 0;
+    let totalAdNot100Mins = 0;
 
     records.forEach(rec => {
       totalHE50Mins += timeToMinutes(rec.he50);
       totalHE100Mins += timeToMinutes(rec.he100);
-      totalHENot100Mins += timeToMinutes(rec.heNoturna100);
-      totalHENot50Mins += timeToMinutes(rec.adNoturno50);
+      totalAdNot50Mins += timeToMinutes(rec.adNoturno50);
+      totalAdNot100Mins += timeToMinutes(rec.adNoturno100);
     });
 
-    const totalOvertimeMins = totalHE50Mins + totalHE100Mins + totalHENot100Mins + totalHENot50Mins;
+    const totalOvertimeMins = totalHE50Mins + totalHE100Mins + totalAdNot50Mins + totalAdNot100Mins;
 
     return {
       he50: minutesToTime(totalHE50Mins),
       he100: minutesToTime(totalHE100Mins),
-      heNot100: minutesToTime(totalHENot100Mins),
-      heNot50: minutesToTime(totalHENot50Mins),
+      adNot50: minutesToTime(totalAdNot50Mins),
+      adNot100: minutesToTime(totalAdNot100Mins),
       totalOvertime: minutesToTime(totalOvertimeMins),
     };
   }, [records]);
@@ -152,7 +149,6 @@ export default function ConsolidatedTable({
     const timeFields: Array<keyof ConsolidatedRecord> = [
       "he50",
       "he100",
-      "heNoturna100",
       "adNoturno50",
       "adNoturno100"
     ];
@@ -698,7 +694,7 @@ export default function ConsolidatedTable({
       },
       {
         title: "HORAS EXTRAS ADICIONAL NOTURNA 50%",
-        value: stats.heNot50,
+        value: stats.adNot50,
         label: "Geral Acumulado Not 50%",
         badge: "NOT 50%",
         badgeColor: [11, 60, 131], // Corporate Blue #0b3c83
@@ -706,7 +702,7 @@ export default function ConsolidatedTable({
       },
       {
         title: "HORAS EXTRAS ADICIONAL NOTURNA 100%",
-        value: stats.heNot100,
+        value: stats.adNot100,
         label: "Geral Acumulado Not 100%",
         badge: "NOT 100%",
         badgeColor: [0, 0, 0], // Black
@@ -1082,7 +1078,6 @@ export default function ConsolidatedTable({
               <ul className="list-disc pl-4 space-y-1 text-slate-400 font-mono">
                 <li>HE 50%</li>
                 <li>HE 100%</li>
-                <li>HE Not. 100%</li>
                 <li>Ad. Not. 50%</li>
                 <li>Ad. Not. 100%</li>
               </ul>
@@ -1216,16 +1211,16 @@ export default function ConsolidatedTable({
           </div>
         </div>
 
-        {/* HE Noturna 50% */}
+        {/* Ad. Noturno 50% */}
         <div className="bg-[#181921] border border-[#262836] hover:border-[#0b3c83]/50 py-2 px-4 rounded flex flex-col justify-between transition-all">
           <div className="flex items-center justify-between gap-1">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans truncate">
-              HE Noturna 50%
+              Ad. Noturno 50%
             </span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-lg font-bold text-[#38bdf8] font-mono tracking-tight">
-              {stats.heNot50}
+            <span className="text-lg font-bold text-indigo-400 font-mono tracking-tight">
+              {stats.adNot50}
             </span>
             <span className="text-[9px] text-slate-500 font-sans">hrs</span>
           </div>
@@ -1234,18 +1229,18 @@ export default function ConsolidatedTable({
           </div>
         </div>
 
-        {/* HE Noturna 100% */}
+        {/* Ad. Noturno 100% */}
         <div className="bg-[#181921] border border-[#262836] hover:border-slate-400/40 py-2 px-4 rounded flex flex-col justify-between transition-all">
           <div className="flex items-center justify-between gap-1">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans truncate">
-              HE Noturna 100%
+              Ad. Noturno 100%
             </span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-lg font-bold text-red-500 font-mono tracking-tight">
-              {stats.heNot100}
+            <span className="text-lg font-bold text-rose-400 font-mono tracking-tight">
+              {stats.adNot100}
             </span>
-            <span className="text-[9px] text-red-500/70 font-sans">hrs</span>
+            <span className="text-[9px] text-rose-500/70 font-sans">hrs</span>
           </div>
           <div className="mt-2 text-[9px] text-slate-500 font-sans leading-none">
             Geral Acumulado
@@ -1288,7 +1283,6 @@ export default function ConsolidatedTable({
               <th className="py-2 px-4 font-sans font-bold">Habilitação</th>
               <th className="py-2 px-2 text-center bg-sky-950/20 text-sky-400">HE 50%</th>
               <th className="py-2 px-2 text-center bg-amber-950/20 text-amber-400">HE 100%</th>
-              <th className="py-2 px-2 text-center bg-fuchsia-950/20 text-fuchsia-400">HE Not 100%</th>
               <th className="py-2 px-2 text-center bg-indigo-950/20 text-indigo-400">Ad. Not 50%</th>
               <th className="py-2 px-2 text-center bg-rose-950/20 text-rose-400">Ad. Not 100%</th>
               <th className="py-2 px-4 text-center w-24">Ações</th>
@@ -1297,7 +1291,7 @@ export default function ConsolidatedTable({
           <tbody className="divide-y divide-[#1e2029]/60 text-xs">
             {processedRecords.length === 0 ? (
               <tr>
-                <td colSpan={10} className="py-10 text-center text-slate-500 font-medium font-sans">
+                <td colSpan={9} className="py-10 text-center text-slate-500 font-medium font-sans">
                   Nenhum funcionário consolidado para o fechamento. Use o botão &quot;Transferir&quot; acima para consolidar os lançamentos.
                 </td>
               </tr>
@@ -1328,13 +1322,22 @@ export default function ConsolidatedTable({
                     </td>
 
                     {/* HE 50% */}
-                    <td className="py-2 px-2 text-center bg-sky-950/5">
-                      {isWritetable(isEditing) ? (
+                    <td 
+                      className="py-2 px-2 text-center bg-sky-950/5 hover:bg-sky-950/20 cursor-pointer transition-colors"
+                      onClick={() => !isEditing && startEditing(rec)}
+                      title="Clique para editar HE 50%"
+                    >
+                      {isEditing ? (
                         <input
                           type="text"
                           value={editBuffer.he50 || ""}
                           onChange={(e) => handleBufferTimeChange("he50", e.target.value)}
-                          className="w-16 bg-[#181921] border border-[#262836] rounded px-2 py-1 text-center font-mono text-xs text-sky-400 focus:outline-none focus:border-sky-400"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") saveEditing(rec.matricula);
+                            if (e.key === "Escape") cancelEditing();
+                          }}
+                          autoFocus
+                          className="w-16 bg-[#181921] border border-sky-500/60 rounded px-2 py-1 text-center font-mono text-xs text-sky-400 focus:outline-none focus:border-sky-400 font-bold"
                         />
                       ) : (
                         <span className="font-mono font-bold text-sky-400">{rec.he50}</span>
@@ -1342,41 +1345,43 @@ export default function ConsolidatedTable({
                     </td>
 
                     {/* HE 100% */}
-                    <td className="py-2 px-2 text-center bg-amber-950/5">
-                      {isWritetable(isEditing) ? (
+                    <td 
+                      className="py-2 px-2 text-center bg-amber-950/5 hover:bg-amber-950/20 cursor-pointer transition-colors"
+                      onClick={() => !isEditing && startEditing(rec)}
+                      title="Clique para editar HE 100%"
+                    >
+                      {isEditing ? (
                         <input
                           type="text"
                           value={editBuffer.he100 || ""}
                           onChange={(e) => handleBufferTimeChange("he100", e.target.value)}
-                          className="w-16 bg-[#181921] border border-[#262836] rounded px-2 py-1 text-center font-mono text-xs text-amber-400 focus:outline-none focus:border-amber-400"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") saveEditing(rec.matricula);
+                            if (e.key === "Escape") cancelEditing();
+                          }}
+                          className="w-16 bg-[#181921] border border-amber-500/60 rounded px-2 py-1 text-center font-mono text-xs text-amber-400 focus:outline-none focus:border-amber-400 font-bold"
                         />
                       ) : (
                         <span className="font-mono font-bold text-amber-400">{rec.he100}</span>
                       )}
                     </td>
 
-                    {/* HE Noturna 100% */}
-                    <td className="py-2 px-2 text-center bg-fuchsia-950/5">
-                      {isWritetable(isEditing) ? (
-                        <input
-                          type="text"
-                          value={editBuffer.heNoturna100 || ""}
-                          onChange={(e) => handleBufferTimeChange("heNoturna100", e.target.value)}
-                          className="w-16 bg-[#181921] border border-[#262836] rounded px-2 py-1 text-center font-mono text-xs text-fuchsia-400 focus:outline-none focus:border-fuchsia-400"
-                        />
-                      ) : (
-                        <span className="font-mono font-bold text-fuchsia-400">{rec.heNoturna100}</span>
-                      )}
-                    </td>
-
                     {/* Ad. Noturno 50% */}
-                    <td className="py-2 px-2 text-center bg-indigo-950/5">
-                      {isWritetable(isEditing) ? (
+                    <td 
+                      className="py-2 px-2 text-center bg-indigo-950/5 hover:bg-indigo-950/20 cursor-pointer transition-colors"
+                      onClick={() => !isEditing && startEditing(rec)}
+                      title="Clique para editar Ad. Not. 50%"
+                    >
+                      {isEditing ? (
                         <input
                           type="text"
                           value={editBuffer.adNoturno50 || ""}
                           onChange={(e) => handleBufferTimeChange("adNoturno50", e.target.value)}
-                          className="w-16 bg-[#181921] border border-[#262836] rounded px-2 py-1 text-center font-mono text-xs text-indigo-400 focus:outline-none focus:border-indigo-400"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") saveEditing(rec.matricula);
+                            if (e.key === "Escape") cancelEditing();
+                          }}
+                          className="w-16 bg-[#181921] border border-indigo-500/60 rounded px-2 py-1 text-center font-mono text-xs text-indigo-400 focus:outline-none focus:border-indigo-400 font-bold"
                         />
                       ) : (
                         <span className="font-mono font-bold text-indigo-400">{rec.adNoturno50}</span>
@@ -1384,13 +1389,21 @@ export default function ConsolidatedTable({
                     </td>
 
                     {/* Ad. Noturno 100% */}
-                    <td className="py-2 px-2 text-center bg-rose-950/5">
-                      {isWritetable(isEditing) ? (
+                    <td 
+                      className="py-2 px-2 text-center bg-rose-950/5 hover:bg-rose-950/20 cursor-pointer transition-colors"
+                      onClick={() => !isEditing && startEditing(rec)}
+                      title="Clique para editar Ad. Not. 100%"
+                    >
+                      {isEditing ? (
                         <input
                           type="text"
                           value={editBuffer.adNoturno100 || ""}
                           onChange={(e) => handleBufferTimeChange("adNoturno100", e.target.value)}
-                          className="w-16 bg-[#181921] border border-[#262836] rounded px-2 py-1 text-center font-mono text-xs text-rose-400 focus:outline-none focus:border-rose-400"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") saveEditing(rec.matricula);
+                            if (e.key === "Escape") cancelEditing();
+                          }}
+                          className="w-16 bg-[#181921] border border-rose-500/60 rounded px-2 py-1 text-center font-mono text-xs text-rose-400 focus:outline-none focus:border-rose-400 font-bold"
                         />
                       ) : (
                         <span className="font-mono font-bold text-rose-400">{rec.adNoturno100}</span>
@@ -1611,7 +1624,7 @@ export default function ConsolidatedTable({
                   </div>
                 </div>
 
-                {/* HE Noturna 50% */}
+                {/* Ad. Noturno 50% */}
                 <div className="bg-[#f8fafc] border-[1.5px] border-[#0b3c83] py-2 px-4 rounded flex flex-col justify-between transition-all">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-[7.5px] font-bold text-slate-600 uppercase tracking-wider font-sans truncate">
@@ -1620,7 +1633,7 @@ export default function ConsolidatedTable({
                   </div>
                   <div className="mt-2 flex items-baseline gap-2">
                     <span className="text-sm font-extrabold text-[#0b3c83] font-sans tracking-tight">
-                      {stats.heNot50}
+                      {stats.adNot50}
                     </span>
                     <span className="text-[6.5px] text-[#0b3c83]/70 font-sans">hrs</span>
                   </div>
@@ -1629,7 +1642,7 @@ export default function ConsolidatedTable({
                   </div>
                 </div>
 
-                {/* HE Noturna 100% */}
+                {/* Ad. Noturno 100% */}
                 <div className="bg-[#f8fafc] border-[1.5px] border-[#0b3c83] py-2 px-4 rounded flex flex-col justify-between transition-all">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-[7.5px] font-bold text-slate-600 uppercase tracking-wider font-sans truncate">
@@ -1638,7 +1651,7 @@ export default function ConsolidatedTable({
                   </div>
                   <div className="mt-2 flex items-baseline gap-2">
                     <span className="text-sm font-extrabold text-red-600 font-sans tracking-tight">
-                      {stats.heNot100}
+                      {stats.adNot100}
                     </span>
                     <span className="text-[6.5px] text-red-600/80 font-sans">hrs</span>
                   </div>

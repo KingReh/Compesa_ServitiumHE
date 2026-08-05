@@ -41,7 +41,6 @@ export interface ConsolidatedRecord {
   habilitacao: string;
   he50: string; // HH:MM
   he100: string; // HH:MM
-  heNoturna100: string; // HH:MM (Wait, does prompt ask for "Hora Extra Noturna 100%"? Let's check prompt details)
   adNoturno50: string; // HH:MM
   adNoturno100: string; // HH:MM
   periodo: string; // Mês/Ano e.g. "Maio 2026"
