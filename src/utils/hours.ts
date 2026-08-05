@@ -46,54 +46,93 @@ export function isValidTime(timeStr: string): boolean {
 
 /**
  * Takes a raw keystroke value and formats/applies a clean HH:MM mask while typing.
- * Rules:
- * - Only allow numbers and colon.
- * - Max length of 5 (or more if they type 3 digits for hours, but standard daily is max 24 hours, so e.g. "99:59").
- * Let's make a highly interactive mask:
- * - Strip out all non-digits.
- * - Limit to 4 digits (HHMM).
- * - If length is 3 or 4, format as HH:MM.
+ * Supports hours with 1, 2, 3 or more digits (e.g. 104:36, 120:00).
  */
 export function applyTimeMask(rawValue: string): string {
+  if (!rawValue) return "";
+
+  // If user typed a colon, honor their explicit separation of hours and minutes
+  if (rawValue.includes(":")) {
+    const parts = rawValue.split(":");
+    const hours = parts[0].replace(/\D/g, "");
+    let minutes = parts[1].replace(/\D/g, "").slice(0, 2);
+
+    if (minutes.length === 2) {
+      const minsNum = parseInt(minutes, 10);
+      if (minsNum > 59) {
+        minutes = "59";
+      }
+    }
+    return `${hours}:${minutes}`;
+  }
+
   // Strip non-digits
   const digits = rawValue.replace(/\D/g, "");
-  
+
   if (digits.length === 0) {
     return "";
   }
-  
+
   if (digits.length <= 2) {
     return digits;
   }
-  
-  const hours = digits.slice(0, 2);
-  let minutes = digits.slice(2, 4);
 
-  // Validate minutes to not exceed 59 when fully typed
-  if (minutes.length === 2) {
-    const minsNum = parseInt(minutes, 10);
-    if (minsNum > 59) {
-      minutes = "59";
+  // 3 or 4 digits without colon (e.g., "123" -> "12:3", "1230" -> "12:30")
+  if (digits.length <= 4) {
+    const hours = digits.slice(0, digits.length <= 3 ? digits.length - 1 : 2);
+    let minutes = digits.slice(digits.length <= 3 ? digits.length - 1 : 2);
+
+    if (minutes.length === 2) {
+      const minsNum = parseInt(minutes, 10);
+      if (minsNum > 59) {
+        minutes = "59";
+      }
     }
+    return `${hours}:${minutes}`;
+  }
+
+  // 5 or more digits without colon (e.g., "10436" -> hours "104", minutes "36")
+  const hours = digits.slice(0, digits.length - 2);
+  let minutes = digits.slice(digits.length - 2);
+
+  const minsNum = parseInt(minutes, 10);
+  if (minsNum > 59) {
+    minutes = "59";
   }
 
   return `${hours}:${minutes}`;
 }
 
 /**
- * Format a finished string (like on blur) to ensure it is fully compliant "HH:MM".
- * E.g., "5" -> "05:00", "05:1" -> "05:10", "1:3" -> "01:30"
+ * Format a finished string (like on blur) to ensure it is fully compliant "HH:MM" or "HHH:MM".
+ * E.g., "104:36" -> "104:36", "104:3" -> "104:30", "5" -> "05:00", "104" -> "104:00"
  */
 export function normalizeTimeOnBlur(timeStr: string): string {
   const clean = timeStr.trim();
   if (!clean) return "00:00";
 
-  // If it already matches HH:MM perfectly
-  if (/^\d{2}:[0-5]\d$/.test(clean)) {
-    return clean;
+  // If it contains a colon
+  if (clean.includes(":")) {
+    const parts = clean.split(":");
+    const rawH = parts[0].replace(/\D/g, "");
+    const rawM = parts[1].replace(/\D/g, "");
+
+    const hoursNum = parseInt(rawH, 10);
+    const hStr = isNaN(hoursNum) ? "00" : String(hoursNum).padStart(2, "0");
+
+    let mStr = "00";
+    if (rawM.length === 1) {
+      mStr = rawM + "0"; // e.g. "3" -> "30"
+    } else if (rawM.length >= 2) {
+      let mNum = parseInt(rawM.slice(0, 2), 10);
+      if (mNum > 59) mNum = 59;
+      mStr = String(mNum).padStart(2, "0");
+    }
+
+    return `${hStr}:${mStr}`;
   }
 
-  // If it's just numbers
+  // If no colon
   const digits = clean.replace(/\D/g, "");
   if (!digits) return "00:00";
 
@@ -102,17 +141,28 @@ export function normalizeTimeOnBlur(timeStr: string): string {
   } else if (digits.length === 2) {
     return `${digits}:00`;
   } else if (digits.length === 3) {
+    const val = parseInt(digits, 10);
+    if (val >= 100) {
+      return `${digits}:00`;
+    }
     const hours = `0${digits.slice(0, 1)}`;
-    const minutes = `${digits.slice(1, 3)}`;
-    const minsVal = parseInt(minutes, 10);
-    const validMins = minsVal > 59 ? "59" : minutes;
-    return `${hours}:${validMins}`;
+    const minutes = digits.slice(1, 3);
+    let minsVal = parseInt(minutes, 10);
+    if (minsVal > 59) minsVal = 59;
+    return `${hours}:${String(minsVal).padStart(2, "0")}`;
   } else {
-    const hours = digits.slice(0, 2);
-    const minutes = digits.slice(2, 4).padEnd(2, "0");
-    const minsVal = parseInt(minutes, 10);
-    const validMins = minsVal > 59 ? "59" : minutes;
-    return `${hours}:${validMins}`;
+    // 4 or more digits
+    const hoursDigits = digits.slice(0, digits.length - 2);
+    const minutesDigits = digits.slice(digits.length - 2);
+
+    const hoursNum = parseInt(hoursDigits, 10) || 0;
+    let minsNum = parseInt(minutesDigits, 10) || 0;
+    if (minsNum > 59) minsNum = 59;
+
+    const hStr = String(hoursNum).padStart(2, "0");
+    const mStr = String(minsNum).padStart(2, "0");
+
+    return `${hStr}:${mStr}`;
   }
 }
 

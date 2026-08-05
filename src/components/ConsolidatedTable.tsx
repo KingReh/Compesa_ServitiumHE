@@ -1337,7 +1337,7 @@ export default function ConsolidatedTable({
                             if (e.key === "Escape") cancelEditing();
                           }}
                           autoFocus
-                          className="w-16 bg-[#181921] border border-sky-500/60 rounded px-2 py-1 text-center font-mono text-xs text-sky-400 focus:outline-none focus:border-sky-400 font-bold"
+                          className="w-20 bg-[#181921] border border-sky-500/60 rounded px-2 py-1 text-center font-mono text-xs text-sky-400 focus:outline-none focus:border-sky-400 font-bold"
                         />
                       ) : (
                         <span className="font-mono font-bold text-sky-400">{rec.he50}</span>
@@ -1359,7 +1359,7 @@ export default function ConsolidatedTable({
                             if (e.key === "Enter") saveEditing(rec.matricula);
                             if (e.key === "Escape") cancelEditing();
                           }}
-                          className="w-16 bg-[#181921] border border-amber-500/60 rounded px-2 py-1 text-center font-mono text-xs text-amber-400 focus:outline-none focus:border-amber-400 font-bold"
+                          className="w-20 bg-[#181921] border border-amber-500/60 rounded px-2 py-1 text-center font-mono text-xs text-amber-400 focus:outline-none focus:border-amber-400 font-bold"
                         />
                       ) : (
                         <span className="font-mono font-bold text-amber-400">{rec.he100}</span>
@@ -1381,7 +1381,7 @@ export default function ConsolidatedTable({
                             if (e.key === "Enter") saveEditing(rec.matricula);
                             if (e.key === "Escape") cancelEditing();
                           }}
-                          className="w-16 bg-[#181921] border border-indigo-500/60 rounded px-2 py-1 text-center font-mono text-xs text-indigo-400 focus:outline-none focus:border-indigo-400 font-bold"
+                          className="w-20 bg-[#181921] border border-indigo-500/60 rounded px-2 py-1 text-center font-mono text-xs text-indigo-400 focus:outline-none focus:border-indigo-400 font-bold"
                         />
                       ) : (
                         <span className="font-mono font-bold text-indigo-400">{rec.adNoturno50}</span>
@@ -1403,7 +1403,7 @@ export default function ConsolidatedTable({
                             if (e.key === "Enter") saveEditing(rec.matricula);
                             if (e.key === "Escape") cancelEditing();
                           }}
-                          className="w-16 bg-[#181921] border border-rose-500/60 rounded px-2 py-1 text-center font-mono text-xs text-rose-400 focus:outline-none focus:border-rose-400 font-bold"
+                          className="w-20 bg-[#181921] border border-rose-500/60 rounded px-2 py-1 text-center font-mono text-xs text-rose-400 focus:outline-none focus:border-rose-400 font-bold"
                         />
                       ) : (
                         <span className="font-mono font-bold text-rose-400">{rec.adNoturno100}</span>
