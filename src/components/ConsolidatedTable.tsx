@@ -262,14 +262,14 @@ export default function ConsolidatedTable({
         border: thinBorder
       },
       specialtyCell: {
-        font: { name: "Arial", sz: 8.5, bold: true, color: { rgb: "0B3C83" } },
-        fill: { fgColor: { rgb: "F8FAFC" } },
+        font: { name: "Arial", sz: 8.5, bold: true, color: { rgb: "FFFFFF" } },
+        fill: { fgColor: { rgb: "0B3C83" } },
         alignment: { horizontal: "center", vertical: "center", wrapText: true },
         border: thinBorder
       },
       nameCell: {
         font: { name: "Arial", sz: 9.5, bold: true, color: { rgb: "000000" } },
-        alignment: { horizontal: "left", vertical: "center" },
+        alignment: { horizontal: "center", vertical: "center" },
         border: thinBorder
       },
       centerCell: {
@@ -488,7 +488,7 @@ export default function ConsolidatedTable({
         // CPF
         writeCell(currentRow, 3, rec.cpf, excelStyles.centerCell);
         // Habilitação
-        writeCell(currentRow, 4, rec.habilitacao || "Nenhuma", excelStyles.leftCell);
+        writeCell(currentRow, 4, rec.habilitacao || "Nenhuma", excelStyles.centerCell);
 
         // Overtime Hour Columns (with highlighted backgrounds matching PDF)
         writeCell(currentRow, 5, formatExcelHours(rec.he50), excelStyles.skyHourCell);
@@ -1757,10 +1757,10 @@ export default function ConsolidatedTable({
                   <thead>
                     <tr className="bg-[#0b3c83] text-white">
                       <th className="border border-[#0b3c83] p-2 text-center font-bold text-[7.5px]" rowSpan={2}>EQUIPE/DESCRIÇÃO</th>
-                      <th className="border border-[#0b3c83] p-2 text-left font-bold text-[7.5px]" rowSpan={2}>NOME DO PROFISSIONAL</th>
+                      <th className="border border-[#0b3c83] p-2 text-center font-bold text-[7.5px]" rowSpan={2}>NOME DO PROFISSIONAL</th>
                       <th className="border border-[#0b3c83] p-2 text-center font-bold text-[7.5px]" rowSpan={2}>MAT</th>
                       <th className="border border-[#0b3c83] p-2 text-center font-bold text-[7.5px]" rowSpan={2}>CPF</th>
-                      <th className="border border-[#0b3c83] p-2 text-left font-bold text-[7.5px]" rowSpan={2}>HABILITAÇÃO</th>
+                      <th className="border border-[#0b3c83] p-2 text-center font-bold text-[7.5px]" rowSpan={2}>HABILITAÇÃO</th>
                       <th className="border border-[#0b3c83] p-2 text-center font-bold text-[6.5px] leading-tight" rowSpan={2}>HORA EXTRA<br/>SEGUNDA A<br/>SÁBADO 50%</th>
                       <th className="border border-[#0b3c83] p-2 text-center font-bold text-[6.5px] leading-tight" rowSpan={2}>HORA EXTRA<br/>DOMINGOS E<br/>FERIADOS 100%</th>
                       <th className="border border-[#0b3c83] p-2 text-center font-bold text-[6.5px] leading-tight" colSpan={2}>HORA EXTRA NOTURNA 50% DAS 22:00 ÀS 05:00</th>
@@ -1798,14 +1798,14 @@ export default function ConsolidatedTable({
                               {idx === 0 && (
                                 <td 
                                   rowSpan={groupRows.length} 
-                                  className="border border-[#0b3c83] bg-transparent p-2 text-center font-bold text-slate-800 text-[8.5px] uppercase align-middle"
+                                  className="border border-[#0b3c83] bg-[#0b3c83] p-2 text-center font-bold text-white text-[8.5px] uppercase align-middle"
                                 >
                                   {spec}
                                 </td>
                               )}
                               
                               {/* 2. NOME */}
-                              <td className="border border-[#0b3c83] p-2 font-bold text-black text-[8.5px]">{rec.nome}</td>
+                              <td className="border border-[#0b3c83] p-2 text-center font-bold text-black text-[8.5px]">{rec.nome}</td>
                               
                               {/* 3. MATRICULA */}
                               <td className="border border-[#0b3c83] p-2 text-center font-mono text-slate-700">{rec.matricula}</td>
@@ -1814,7 +1814,7 @@ export default function ConsolidatedTable({
                               <td className="border border-[#0b3c83] p-2 text-center font-mono text-slate-700 whitespace-nowrap">{rec.cpf}</td>
                               
                               {/* 5. HABILITAÇÃO */}
-                              <td className="border border-[#0b3c83] p-2 text-slate-700">{rec.habilitacao || "Nenhuma"}</td>
+                              <td className="border border-[#0b3c83] p-2 text-center text-slate-700">{rec.habilitacao || "Nenhuma"}</td>
                               
                               {/* 6. HE 50% */}
                               <td className="border border-[#0b3c83] p-2 text-center font-bold text-black bg-[#f0f9ff]">{formatHours(rec.he50)}</td>
