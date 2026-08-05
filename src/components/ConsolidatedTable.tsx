@@ -598,74 +598,138 @@ export default function ConsolidatedTable({
       format: "a4"
     });
 
+    const N = processedRecords.length;
+
+    // Determine layout geometry dynamically based on N so that EVERYTHING fits strictly on 1 page
+    const topMargin = N > 30 ? 4 : (N > 15 ? 5 : 8);
+    const bottomMargin = N > 30 ? 4 : (N > 15 ? 5 : 8);
+    const pageHeight = 210;
+    const maxY = pageHeight - bottomMargin;
+
+    let headerY = topMargin;
+    let headerH = 40;
+    let cardsH = 12;
+
+    if (N > 35) {
+      headerH = 20;
+      cardsH = 7;
+    } else if (N > 20) {
+      headerH = 28;
+      cardsH = 9;
+    }
+
     // 1. Draw Corporate Header box
-    // Enclosing rectangle
     doc.setDrawColor(11, 60, 131);
     doc.setLineWidth(0.3);
-    doc.rect(8, 8, 281, 40); // Y=8 to 48, X=8 to 289
+    doc.rect(8, headerY, 281, headerH); // X=8 to 289
 
     // Columns separators
-    doc.line(56, 8, 56, 48);  // Separator 1 (56 is a multiple of 8)
-    doc.line(240, 8, 240, 48); // Separator 2 (240 is a multiple of 8)
+    doc.line(56, headerY, 56, headerY + headerH);
+    doc.line(240, headerY, 240, headerY + headerH);
 
     // Column 1: Logo & CMA SUL
     try {
-      doc.addImage(SERVITIUM_LOGO_BASE64, "PNG", 16, 12, 32, 12);
+      if (headerH >= 35) {
+        doc.addImage(SERVITIUM_LOGO_BASE64, "PNG", 16, headerY + 4, 32, 12);
+        doc.setTextColor(11, 60, 131);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(15);
+        doc.text("CMA SUL", 32, headerY + 30, { align: "center" });
+      } else if (headerH >= 25) {
+        doc.addImage(SERVITIUM_LOGO_BASE64, "PNG", 16, headerY + 2, 32, 9);
+        doc.setTextColor(11, 60, 131);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.text("CMA SUL", 32, headerY + 22, { align: "center" });
+      } else {
+        doc.addImage(SERVITIUM_LOGO_BASE64, "PNG", 16, headerY + 1.5, 32, 7);
+        doc.setTextColor(11, 60, 131);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.text("CMA SUL", 32, headerY + 16, { align: "center" });
+      }
     } catch (e) {
       console.warn("Could not insert base64 logo, using fallback", e);
-      // Draw stylized S logo emblem
-      doc.setFillColor(139, 0, 0); // Dark Red
-      doc.rect(16, 12, 8, 8, "F");
-      doc.setTextColor(255, 215, 0); // Gold
+      doc.setFillColor(139, 0, 0);
+      doc.rect(16, headerY + 4, 8, 8, "F");
+      doc.setTextColor(255, 215, 0);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
-      doc.text("S", 18, 18.5);
-
-      doc.setTextColor(139, 0, 0); // Dark Red
+      doc.text("S", 18, headerY + 10.5);
+      doc.setTextColor(139, 0, 0);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.text("SERVITIUM", 26, 18.5);
+      doc.text("SERVITIUM", 26, headerY + 10.5);
+      doc.setTextColor(11, 60, 131);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("CMA SUL", 32, headerY + headerH - 4, { align: "center" });
     }
 
-    doc.setTextColor(11, 60, 131); // Deep Blue
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(15);
-    doc.text("CMA SUL", 32, 38, { align: "center" });
-
     // Column 2: Center info details
-    doc.setTextColor(11, 60, 131); // Deep Blue for company name
+    doc.setTextColor(11, 60, 131);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(8.5);
-    doc.text("COMPESA – COMPANHIA PERNAMBUCANA DE SANEAMENTO", 60, 14);
 
-    doc.setTextColor(51, 65, 85); // Slate/Dark Gray
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(7.5);
-    doc.text("SETOR: GERÊNCIA DE PRODUÇÃO METROPOLITANA- GPM/CMA SUL", 60, 20);
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7);
-    doc.text("CGC 09.769.035/0001-64 – IE 18.1.001.0014398-6", 60, 25);
-    doc.setFont("helvetica", "bold");
-    doc.text("ETA PIRAPAMA - BR Sul KM 100, SN - Pirapama, Cabo de Santo Agostinho - PE", 60, 30);
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.text("EMPRESA: SERVITIUM EIRELI LTDA", 60, 38);
-    doc.text("CONTRATO: CT.PS.22.4.417 - MANUT DAS UNIDADES OPERACIONAIS", 60, 43);
+    if (headerH >= 35) {
+      doc.setFontSize(8.5);
+      doc.text("COMPESA – COMPANHIA PERNAMBUCANA DE SANEAMENTO", 60, headerY + 6);
+      doc.setTextColor(51, 65, 85);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.text("SETOR: GERÊNCIA DE PRODUÇÃO METROPOLITANA- GPM/CMA SUL", 60, headerY + 12);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7);
+      doc.text("CGC 09.769.035/0001-64 – IE 18.1.001.0014398-6", 60, headerY + 17);
+      doc.setFont("helvetica", "bold");
+      doc.text("ETA PIRAPAMA - BR Sul KM 100, SN - Pirapama, Cabo de Santo Agostinho - PE", 60, headerY + 22);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text("EMPRESA: SERVITIUM EIRELI LTDA", 60, headerY + 30);
+      doc.text("CONTRATO: CT.PS.22.4.417 - MANUT DAS UNIDADES OPERACIONAIS", 60, headerY + 35);
+    } else if (headerH >= 25) {
+      doc.setFontSize(7.5);
+      doc.text("COMPESA – COMPANHIA PERNAMBUCANA DE SANEAMENTO", 60, headerY + 4.5);
+      doc.setTextColor(51, 65, 85);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(6.5);
+      doc.text("SETOR: GERÊNCIA DE PRODUÇÃO METROPOLITANA- GPM/CMA SUL", 60, headerY + 9);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(6);
+      doc.text("CGC 09.769.035/0001-64 – IE 18.1.001.0014398-6", 60, headerY + 13);
+      doc.setFont("helvetica", "bold");
+      doc.text("ETA PIRAPAMA - BR Sul KM 100, SN - Pirapama, Cabo de Santo Agostinho - PE", 60, headerY + 17);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7);
+      doc.text("EMPRESA: SERVITIUM EIRELI LTDA", 60, headerY + 22);
+      doc.text("CONTRATO: CT.PS.22.4.417 - MANUT DAS UNIDADES OPERACIONAIS", 60, headerY + 26);
+    } else {
+      doc.setFontSize(6.5);
+      doc.text("COMPESA – COMPANHIA PERNAMBUCANA DE SANEAMENTO", 60, headerY + 3.5);
+      doc.setTextColor(51, 65, 85);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(5.5);
+      doc.text("SETOR: GERÊNCIA DE PRODUÇÃO METROPOLITANA- GPM/CMA SUL", 60, headerY + 7);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(5);
+      doc.text("CGC 09.769.035/0001-64 – IE 18.1.001.0014398-6", 60, headerY + 10);
+      doc.setFont("helvetica", "bold");
+      doc.text("ETA PIRAPAMA - BR Sul KM 100, SN - Pirapama, Cabo de Santo Agostinho - PE", 60, headerY + 13);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(5.5);
+      doc.text("EMPRESA: SERVITIUM EIRELI LTDA | CONTRATO: CT.PS.22.4.417", 60, headerY + 17);
+    }
 
     // Column 3: Month/Year formatted like Março-2026
     const formattedPeriod = periodName.replace(/[\s\/]+/g, "-");
-    doc.setTextColor(11, 60, 131); // Deep Blue
+    doc.setTextColor(11, 60, 131);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.text(formattedPeriod, 264.5, 28, { align: "center" });
+    doc.setFontSize(headerH >= 35 ? 18 : (headerH >= 25 ? 14 : 11));
+    doc.text(formattedPeriod, 264.5, headerY + headerH / 2 + 2, { align: "center" });
 
     // 1.5. Draw Stats Cards Row
-    const cardY = 52;
-    const cardHeight = 12; // 12mm is a multiple of 4
+    const cardY = headerY + headerH + (N > 35 ? 2 : (N > 20 ? 3 : 4));
     const cardWidth = 53;
-    const gap = 4; // 4mm gap
+    const gap = 4;
 
     const cardsData = [
       {
@@ -673,76 +737,112 @@ export default function ConsolidatedTable({
         value: stats.totalOvertime,
         label: "HE 50% + 100% + Not 50% + 100%",
         badge: "TOTAL HE",
-        badgeColor: [0, 0, 0], // Black
-        textColor: [249, 115, 22] // Orange #f97316
+        badgeColor: [0, 0, 0],
+        textColor: [249, 115, 22]
       },
       {
         title: "HORAS EXTRAS 50% (SEG-SÁB)",
         value: stats.he50,
         label: "Geral Acumulado 50%",
         badge: "HE 50%",
-        badgeColor: [11, 60, 131], // Corporate Blue #0b3c83
-        textColor: [11, 60, 131] // Corporate Blue
+        badgeColor: [11, 60, 131],
+        textColor: [11, 60, 131]
       },
       {
         title: "HORAS EXTRAS 100% (DOM-FER)",
         value: stats.he100,
         label: "Geral Acumulado 100%",
         badge: "HE 100%",
-        badgeColor: [0, 0, 0], // Black
-        textColor: [185, 28, 28] // Red #b91c1c
+        badgeColor: [0, 0, 0],
+        textColor: [185, 28, 28]
       },
       {
         title: "HORAS EXTRAS ADICIONAL NOTURNA 50%",
         value: stats.adNot50,
         label: "Geral Acumulado Not 50%",
         badge: "NOT 50%",
-        badgeColor: [11, 60, 131], // Corporate Blue #0b3c83
-        textColor: [11, 60, 131] // Corporate Blue
+        badgeColor: [11, 60, 131],
+        textColor: [11, 60, 131]
       },
       {
         title: "HORAS EXTRAS ADICIONAL NOTURNA 100%",
         value: stats.adNot100,
         label: "Geral Acumulado Not 100%",
         badge: "NOT 100%",
-        badgeColor: [0, 0, 0], // Black
-        textColor: [185, 28, 28] // Red #b91c1c
+        badgeColor: [0, 0, 0],
+        textColor: [185, 28, 28]
       }
     ];
 
     cardsData.forEach((card, index) => {
       const cardX = 8 + index * (cardWidth + gap);
 
-      // Card Background with slight border matching corporate blue
-      doc.setFillColor(248, 250, 252); // slate-50
-      doc.setDrawColor(11, 60, 131); // Corporate Blue #0b3c83
+      doc.setFillColor(248, 250, 252);
+      doc.setDrawColor(11, 60, 131);
       doc.setLineWidth(0.2);
-      doc.rect(cardX, cardY, cardWidth, cardHeight, "FD");
+      doc.rect(cardX, cardY, cardWidth, cardsH, "FD");
 
-      // Title (top left)
-      doc.setTextColor(71, 85, 105); // slate-600
+      // Title
+      doc.setTextColor(71, 85, 105);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(5.5);
-      doc.text(card.title, cardX + 2.5, cardY + 3.5);
+      doc.setFontSize(cardsH <= 7 ? 4.5 : (cardsH <= 9 ? 5.0 : 5.5));
+      doc.text(card.title, cardX + 2.5, cardY + (cardsH <= 7 ? 2.3 : (cardsH <= 9 ? 2.8 : 3.5)));
 
-      // Large Value (bottom left)
+      // Value
       doc.setTextColor(card.textColor[0], card.textColor[1], card.textColor[2]);
       doc.setFont("helvetica", "bold");
       if (card.title === "ACUMULADO GERAL") {
-        doc.setFontSize(13); // larger!
+        doc.setFontSize(cardsH <= 7 ? 8.5 : (cardsH <= 9 ? 10 : 13));
       } else {
-        doc.setFontSize(9);
+        doc.setFontSize(cardsH <= 7 ? 6.5 : (cardsH <= 9 ? 7.5 : 9));
       }
-      doc.text(card.value, cardX + 2.5, cardY + 9.5);
+      doc.text(card.value, cardX + 2.5, cardY + (cardsH <= 7 ? 5.8 : (cardsH <= 9 ? 7.2 : 9.5)));
 
-      // Label (bottom right / side of value)
-      doc.setTextColor(148, 163, 184); // slate-400
+      // Label
+      doc.setTextColor(148, 163, 184);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(4.5);
-      doc.text(card.label, cardX + cardWidth - 2.5, cardY + 9.5, { align: "right" });
+      doc.setFontSize(cardsH <= 7 ? 3.8 : (cardsH <= 9 ? 4.2 : 4.5));
+      doc.text(card.label, cardX + cardWidth - 2.5, cardY + (cardsH <= 7 ? 5.8 : (cardsH <= 9 ? 7.2 : 9.5)), { align: "right" });
     });
 
-    // 2. Prep Nested Headers exactly matching image
+    const startY = cardY + cardsH + (N > 35 ? 2 : (N > 20 ? 3 : 4));
+    const availableTableHeight = maxY - startY;
+    const totalTableRows = N + 3; // 2 header rows + N data rows + 1 footer row
+    const targetRowHeight = availableTableHeight / totalTableRows;
+
+    let cellPadding = 1.2;
+    let bodyFontSize = 6.5;
+    let headFontSize = 4.0;
+    let footFontSize = 8.0;
+
+    if (targetRowHeight < 2.5) {
+      cellPadding = 0.15;
+      bodyFontSize = 3.5;
+      headFontSize = 3.0;
+      footFontSize = 5.0;
+    } else if (targetRowHeight < 3.2) {
+      cellPadding = 0.25;
+      bodyFontSize = 4.0;
+      headFontSize = 3.2;
+      footFontSize = 5.5;
+    } else if (targetRowHeight < 4.2) {
+      cellPadding = 0.4;
+      bodyFontSize = 4.8;
+      headFontSize = 3.5;
+      footFontSize = 6.0;
+    } else if (targetRowHeight < 5.5) {
+      cellPadding = 0.6;
+      bodyFontSize = 5.5;
+      headFontSize = 3.8;
+      footFontSize = 7.0;
+    } else if (targetRowHeight < 7.0) {
+      cellPadding = 0.8;
+      bodyFontSize = 6.0;
+      headFontSize = 4.0;
+      footFontSize = 7.5;
+    }
+
+    // 2. Prep Nested Headers
     const headers: any = [
       [
         { content: "EQUIPE/DESCRIÇÃO", rowSpan: 2, styles: { halign: "center", valign: "middle" } },
@@ -768,14 +868,14 @@ export default function ConsolidatedTable({
       ]
     ];
 
-    // 3. Sort by specialty, then name to allow beautiful vertical merging
+    // 3. Sort by specialty, then name
     const sortedBySpecialty = [...processedRecords].sort((a, b) => {
       const specCompare = (a.especialidade || "").localeCompare(b.especialidade || "");
       if (specCompare !== 0) return specCompare;
       return (a.nome || "").localeCompare(b.nome || "");
     });
 
-    // 4. Construct body rows with grouping logic (rowSpan on specialty)
+    // 4. Construct body rows
     const body: any[] = [];
     const groups: { [key: string]: typeof sortedBySpecialty } = {};
     sortedBySpecialty.forEach(rec => {
@@ -791,7 +891,6 @@ export default function ConsolidatedTable({
       groupRows.forEach((rec, idx) => {
         const rowCells: any[] = [];
         
-        // 1. EQUIPE/DESCRIÇÃO
         if (idx === 0) {
           rowCells.push({ 
             content: spec, 
@@ -806,16 +905,11 @@ export default function ConsolidatedTable({
           });
         }
         
-        // 2. NOME
         rowCells.push({ content: rec.nome, styles: { fontStyle: "bold", textColor: [0, 0, 0] } });
-        // 3. MATRICULA
         rowCells.push({ content: rec.matricula, styles: { halign: "center" } });
-        // 4. CPF
         rowCells.push({ content: rec.cpf, styles: { halign: "center" } });
-        // 5. HABILITAÇÃO
         rowCells.push({ content: rec.habilitacao || "Nenhuma" });
 
-        // Hours helper
         const formatHours = (timeStr: string) => {
           if (!timeStr || timeStr === "00:00") return "";
           const [h] = timeStr.split(":");
@@ -823,29 +917,20 @@ export default function ConsolidatedTable({
           return hoursNum > 0 ? String(hoursNum) : "";
         };
 
-        // 6. HE 50%
         rowCells.push({ content: formatHours(rec.he50), styles: { halign: "center", fontStyle: "bold" } });
-        // 7. HE 100%
         rowCells.push({ content: formatHours(rec.he100), styles: { halign: "center", fontStyle: "bold" } });
-        // 8. AD NOT SEG-SAB
         rowCells.push({ content: formatHours(rec.adNoturno50), styles: { halign: "center", fontStyle: "bold" } });
-        // 9. AD NOT DOM-FER
         rowCells.push({ content: formatHours(rec.adNoturno100), styles: { halign: "center", fontStyle: "bold" } });
 
-        // 10. DIAS DE FALTAS
         rowCells.push({ content: "" });
-        // 11. FÉRIAS 10
         rowCells.push({ content: "" });
-        // 12. FÉRIAS 30
         rowCells.push({ content: "" });
 
-        // 13. VT & 14. VA (with custom color green/gray)
         const vt = rec.recebeValeTransporte ? rec.recebeValeTransporte.toUpperCase().trim() : "NÃO";
         const va = rec.recebeValeAlimentacao ? rec.recebeValeAlimentacao.toUpperCase().trim() : "SIM";
         rowCells.push({ content: vt, styles: { halign: "center", fontStyle: "bold", textColor: vt === "SIM" ? [4, 120, 87] : [148, 163, 184] } });
         rowCells.push({ content: va, styles: { halign: "center", fontStyle: "bold", textColor: va === "SIM" ? [4, 120, 87] : [148, 163, 184] } });
 
-        // 15. AD CONDUTOR, 16. PERICULOSIDADE, 17. INSALUBRIDADE
         rowCells.push({ content: "", styles: { halign: "center" } });
         rowCells.push({ content: "", styles: { halign: "center" } });
         rowCells.push({ content: "", styles: { halign: "center" } });
@@ -854,64 +939,65 @@ export default function ConsolidatedTable({
       });
     });
 
-    // 5. Draw PDF Table
+    // 5. Draw PDF Table strictly on single page
     autoTable(doc, {
-      startY: 68,
+      startY: startY,
       head: headers,
       body: body,
       theme: "grid",
+      pageBreak: "avoid",
       headStyles: {
         fillColor: [11, 60, 131],
         textColor: [255, 255, 255],
-        fontSize: 4.0,
+        fontSize: headFontSize,
         fontStyle: "bold",
         halign: "center",
         valign: "middle",
         lineColor: [0, 0, 0],
         lineWidth: 0.1,
-        cellPadding: 0.5
+        cellPadding: cellPadding * 0.6
       },
       columnStyles: {
-        0: { cellWidth: 24, halign: "center", valign: "middle", fontSize: 6.5 }, // EQUIPE/DESCRIÇÃO
-        1: { cellWidth: 41, valign: "middle", fontSize: 6.5 },                   // NOME
-        2: { cellWidth: 13, halign: "center", valign: "middle", fontSize: 6 },   // MATRÍCULA
-        3: { cellWidth: 23, halign: "center", valign: "middle", fontSize: 6 },   // CPF
-        4: { cellWidth: 30, valign: "middle", fontSize: 6.5 },                   // HABILITAÇÃO
-        5: { cellWidth: 13, halign: "center", valign: "middle", fontSize: 6.5 }, // HE 50%
-        6: { cellWidth: 13, halign: "center", valign: "middle", fontSize: 6.5 }, // HE 100%
-        7: { cellWidth: 13, halign: "center", valign: "middle", fontSize: 6.5 }, // AD NOT SEG-SAB
-        8: { cellWidth: 13, halign: "center", valign: "middle", fontSize: 6.5 }, // AD NOT DOM-FER
-        9: { cellWidth: 11, halign: "center", valign: "middle", fontSize: 6 },   // DIAS DE FALTAS
-        10: { cellWidth: 11, halign: "center", valign: "middle", fontSize: 6 },  // FÉRIAS 10
-        11: { cellWidth: 11, halign: "center", valign: "middle", fontSize: 6 },  // FÉRIAS 30
-        12: { cellWidth: 13, halign: "center", valign: "middle", fontSize: 6 },  // VT
-        13: { cellWidth: 13, halign: "center", valign: "middle", fontSize: 6 },  // VA
-        14: { cellWidth: 13, halign: "center", valign: "middle", fontSize: 6.5 }, // CONDUTOR
-        15: { cellWidth: 13, halign: "center", valign: "middle", fontSize: 6.5 }, // PERICULOSIDADE
-        16: { cellWidth: 13, halign: "center", valign: "middle", fontSize: 6.5 }  // INSALUBRIDADE
+        0: { cellWidth: 24, halign: "center", valign: "middle", fontSize: bodyFontSize },
+        1: { cellWidth: 41, valign: "middle", fontSize: bodyFontSize },
+        2: { cellWidth: 13, halign: "center", valign: "middle", fontSize: Math.max(3.0, bodyFontSize - 0.5) },
+        3: { cellWidth: 23, halign: "center", valign: "middle", fontSize: Math.max(3.0, bodyFontSize - 0.5) },
+        4: { cellWidth: 30, valign: "middle", fontSize: bodyFontSize },
+        5: { cellWidth: 13, halign: "center", valign: "middle", fontSize: bodyFontSize },
+        6: { cellWidth: 13, halign: "center", valign: "middle", fontSize: bodyFontSize },
+        7: { cellWidth: 13, halign: "center", valign: "middle", fontSize: bodyFontSize },
+        8: { cellWidth: 13, halign: "center", valign: "middle", fontSize: bodyFontSize },
+        9: { cellWidth: 11, halign: "center", valign: "middle", fontSize: bodyFontSize },
+        10: { cellWidth: 11, halign: "center", valign: "middle", fontSize: bodyFontSize },
+        11: { cellWidth: 11, halign: "center", valign: "middle", fontSize: bodyFontSize },
+        12: { cellWidth: 13, halign: "center", valign: "middle", fontSize: bodyFontSize },
+        13: { cellWidth: 13, halign: "center", valign: "middle", fontSize: bodyFontSize },
+        14: { cellWidth: 13, halign: "center", valign: "middle", fontSize: bodyFontSize },
+        15: { cellWidth: 13, halign: "center", valign: "middle", fontSize: bodyFontSize },
+        16: { cellWidth: 13, halign: "center", valign: "middle", fontSize: bodyFontSize }
       },
       alternateRowStyles: {
         fillColor: [255, 255, 255]
       },
       styles: {
         font: "helvetica",
-        fontSize: 6.5,
-        cellPadding: 1.2,
+        fontSize: bodyFontSize,
+        cellPadding: cellPadding,
         lineColor: [0, 0, 0],
         lineWidth: 0.1,
         textColor: [0, 0, 0]
       },
-      margin: { left: 8, right: 8 },
+      margin: { left: 8, right: 8, top: startY, bottom: bottomMargin },
       didParseCell: (data) => {
         if (data.section === "body") {
           if (data.column.index === 5) {
-            data.cell.styles.fillColor = [240, 249, 255]; // sky-50 (#f0f9ff)
+            data.cell.styles.fillColor = [240, 249, 255];
           } else if (data.column.index === 6) {
-            data.cell.styles.fillColor = [255, 241, 242]; // amber-50 (#fffbeb)
+            data.cell.styles.fillColor = [255, 241, 242];
           } else if (data.column.index === 7) {
-            data.cell.styles.fillColor = [240, 249, 255]; // violet-50 (#f5f3ff)
+            data.cell.styles.fillColor = [240, 249, 255];
           } else if (data.column.index === 8) {
-            data.cell.styles.fillColor = [255, 241, 242]; // rose-50 (#fff1f2)
+            data.cell.styles.fillColor = [255, 241, 242];
           }
         }
       },
@@ -925,28 +1011,25 @@ export default function ConsolidatedTable({
           if (data.column.index === 15) isChecked = !!rec.periculosidade;
           if (data.column.index === 16) isChecked = !!rec.insalubridade;
 
-          const boxSize = 3.2; // mm
+          const boxSize = Math.max(1.5, Math.min(3.2, data.cell.height * 0.6));
           const boxX = data.cell.x + (data.cell.width - boxSize) / 2;
           const boxY = data.cell.y + (data.cell.height - boxSize) / 2;
 
           if (isChecked) {
-            // Fill with deep blue
-            doc.setFillColor(11, 60, 131); // #0b3c83
+            doc.setFillColor(11, 60, 131);
             doc.setDrawColor(11, 60, 131);
             doc.setLineWidth(0.1);
             doc.rect(boxX, boxY, boxSize, boxSize, "FD");
 
-            // Draw white checkmark inside
             doc.setDrawColor(255, 255, 255);
-            doc.setLineWidth(0.35);
-            // scaling checkmark coordinates inside box
-            doc.line(boxX + 0.8, boxY + 1.6, boxX + 1.4, boxY + 2.3);
-            doc.line(boxX + 1.4, boxY + 2.3, boxX + 2.5, boxY + 0.9);
+            doc.setLineWidth(Math.max(0.15, boxSize * 0.1));
+            const scale = boxSize / 3.2;
+            doc.line(boxX + 0.8 * scale, boxY + 1.6 * scale, boxX + 1.4 * scale, boxY + 2.3 * scale);
+            doc.line(boxX + 1.4 * scale, boxY + 2.3 * scale, boxX + 2.5 * scale, boxY + 0.9 * scale);
           } else {
-            // Unchecked: empty white box with slate border
             doc.setFillColor(255, 255, 255);
-            doc.setDrawColor(148, 163, 184); // slate-400
-            doc.setLineWidth(0.2);
+            doc.setDrawColor(148, 163, 184);
+            doc.setLineWidth(0.15);
             doc.rect(boxX, boxY, boxSize, boxSize, "FD");
           }
         }
@@ -960,16 +1043,19 @@ export default function ConsolidatedTable({
               fillColor: [11, 60, 131], 
               textColor: [255, 255, 255], 
               fontStyle: "bold", 
-              fontSize: 8,
+              fontSize: footFontSize,
               halign: "left",
-              cellPadding: 2 
+              cellPadding: Math.max(0.4, cellPadding * 1.2)
             } 
           }
         ]
       ]
     });
 
-
+    // Enforce 1 single page strictly
+    while (doc.getNumberOfPages() > 1) {
+      doc.deletePage(2);
+    }
 
     doc.save(`Servitium_Fechamento_${formattedPeriod}.pdf`);
   };

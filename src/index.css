@@ -79,4 +79,31 @@ button, select, input, a {
   }
 }
 
+/* Print Styles for Single Page Output */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 4mm;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  header, footer, nav, button, .no-print {
+    display: none !important;
+  }
+  .print-single-page {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+  }
+  table, tr, td, th {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
+
 
